@@ -2,8 +2,8 @@ import frappe
 
 def after_install():
     create_workflow_state()
-    add_workflow_action()
     create_workflow_action()
+    add_workflow_action()
 
 def before_uninstall():
     remove_workflow_action()
@@ -32,13 +32,13 @@ def add_workflow_action():
         workflow_doc.append("states", {
             "state": "Half Received",
             "doc_status": "1",
-            "allow_edit": "Logistic User"
+            "allow_edit": "Logistics User"
         })
         workflow_doc.append("transitions", {
             "state": "Goods Received",
             "action": "Half Received",
             "next_state": "Half Received",
-            "allowed": "Logistic User",
+            "allowed": "Logistics User",
             "allow_self_approval": 1,
             "dont_send_notification_workflow": 1
         })
@@ -46,7 +46,7 @@ def add_workflow_action():
             "state": "Half Received",
             "action": "Abbrechen",
             "next_state": "Fehlbuchung",
-            "allowed": "Logistic User",
+            "allowed": "Logistics User",
             "allow_self_approval": 1,
             "dont_send_notification_workflow": 1
         })
@@ -54,7 +54,7 @@ def add_workflow_action():
             "state": "Half Received",
             "action": "All Items Checked",
             "next_state": "Delivery Checked",
-            "allowed": "Logistic User",
+            "allowed": "Logistics User",
             "allow_self_approval": 1,
             "dont_send_notification_workflow": 1
         })
