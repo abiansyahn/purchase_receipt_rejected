@@ -83,12 +83,12 @@ app_include_js = "/assets/purchase_receipt_rejected/js/purchase_receipt.js"
 # ------------
 
 # before_install = "purchase_receipt_rejected.install.before_install"
-after_install = "purchase_receipt_rejected.install.after_install"
+after_install = "purchase_receipt_rejected.setup.after_install"
 
 # Uninstallation
 # ------------
 
-before_uninstall = "purchase_receipt_rejected.uninstall.before_uninstall"
+before_uninstall = "purchase_receipt_rejected.setup.before_uninstall"
 # after_uninstall = "purchase_receipt_rejected.uninstall.after_uninstall"
 
 # Integration Setup
