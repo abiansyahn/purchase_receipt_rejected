@@ -1,0 +1,189 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:WR{YY}{####}",
+ "creation": "2024-11-08 17:36:49.083563",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_caah",
+  "supplier",
+  "purchase_receipt",
+  "purchase_order",
+  "is_item_returned",
+  "column_break_ulg6",
+  "complaint_date",
+  "complaint_status",
+  "returned_percent",
+  "redelivered_percent",
+  "amended_from",
+  "section_break_qjgg",
+  "contact_person",
+  "contact_email",
+  "section_break_vtar",
+  "reason_for_rejection",
+  "section_break_cimn",
+  "currency",
+  "conversion_rate",
+  "section_break_kkd7",
+  "items",
+  "resolution"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_caah",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Complaint",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "purchase_receipt",
+   "fieldtype": "Link",
+   "label": "Purchase Receipt",
+   "options": "Purchase Receipt"
+  },
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "options": "Purchase Order"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "complaint_status",
+   "fieldtype": "Select",
+   "label": "Complaint Status",
+   "options": "On Progress\nCompleted",
+   "read_only": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "complaint_date",
+   "fieldtype": "Date",
+   "label": "Complaint Date"
+  },
+  {
+   "fieldname": "column_break_ulg6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_kkd7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "reason_for_rejection",
+   "fieldtype": "Small Text",
+   "label": "Reason For Rejection"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Purchase Receipt Rejected Item"
+  },
+  {
+   "fieldname": "resolution",
+   "fieldtype": "Long Text",
+   "label": "Resolution"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "section_break_qjgg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "contact_person",
+   "fieldtype": "Link",
+   "label": "Contact Person",
+   "options": "Contact"
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Small Text",
+   "label": "Contact Email",
+   "options": "Email"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "redelivered_percent",
+   "fieldtype": "Percent",
+   "label": "Redelivered Percent",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_vtar",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_cimn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "conversion_rate",
+   "fieldtype": "Float",
+   "label": "Exchange Rate",
+   "precision": "9"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_item_returned",
+   "fieldtype": "Check",
+   "label": "Is Item Already Returned to Supplier?",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "returned_percent",
+   "fieldtype": "Percent",
+   "label": "Returned Percent",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-01-06 14:46:35.755148",
+ "modified_by": "Administrator",
+ "module": "Purchase Receipt Rejected",
+ "name": "Complaint",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

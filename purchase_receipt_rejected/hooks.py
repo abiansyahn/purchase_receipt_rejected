@@ -26,7 +26,7 @@ app_license = "mit"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/purchase_receipt_rejected/css/purchase_receipt_rejected.css"
-# app_include_js = "/assets/purchase_receipt_rejected/js/purchase_receipt_rejected.js"
+app_include_js = "/assets/purchase_receipt_rejected/js/purchase_receipt.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/purchase_receipt_rejected/css/purchase_receipt_rejected.css"
@@ -83,12 +83,12 @@ app_license = "mit"
 # ------------
 
 # before_install = "purchase_receipt_rejected.install.before_install"
-# after_install = "purchase_receipt_rejected.install.after_install"
+after_install = "purchase_receipt_rejected.install.after_install"
 
 # Uninstallation
 # ------------
 
-# before_uninstall = "purchase_receipt_rejected.uninstall.before_uninstall"
+before_uninstall = "purchase_receipt_rejected.uninstall.before_uninstall"
 # after_uninstall = "purchase_receipt_rejected.uninstall.after_uninstall"
 
 # Integration Setup
@@ -137,13 +137,19 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Purchase Receipt": {
+		"before_submit": "purchase_receipt_rejected.purchase_receipt.check_for_rejected_items",
+        "on_submit": [
+            "purchase_receipt_rejected.purchase_receipt.update_complaint_items",   
+            "purchase_receipt_rejected.purchase_receipt.update_returned_item",   
+		],
+        "on_cancel": [
+            "purchase_receipt_rejected.purchase_receipt.update_cancel_complaint_items",   
+            "purchase_receipt_rejected.purchase_receipt.update_cancel_returned_item",   
+		]
+	}
+}
 
 # Scheduled Tasks
 # ---------------
@@ -181,9 +187,9 @@ app_license = "mit"
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
-# override_doctype_dashboards = {
-# 	"Task": "purchase_receipt_rejected.task.get_dashboard_data"
-# }
+override_doctype_dashboards = {
+	"Purchase Receipt": "purchase_receipt_rejected.dashboard_overrides.get_dashboard_for_purchase_receipt"
+}
 
 # exempt linked doctypes from being automatically cancelled
 #
@@ -242,3 +248,6 @@ app_license = "mit"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+fixtures = [
+    {"dt": "Custom Field", "filters": [["module", "=", "Purchase Receipt Rejected"]]}
+]

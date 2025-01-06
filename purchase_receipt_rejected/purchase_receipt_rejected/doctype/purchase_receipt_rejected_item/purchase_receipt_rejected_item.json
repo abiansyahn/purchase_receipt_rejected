@@ -1,0 +1,146 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-08 21:52:48.952126",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "item_name",
+  "rejected_qty",
+  "uom",
+  "stock_uom",
+  "column_break_bkxd",
+  "rate",
+  "amount",
+  "redelivered_qty",
+  "conversion_factor",
+  "returned_qty",
+  "reference_section",
+  "purchase_order",
+  "purchase_receipt",
+  "column_break_ozey",
+  "purchase_order_item",
+  "purchase_receipt_item"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "redelivered_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Redelivered Qty",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rejected_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Rejected Qty",
+   "precision": "3"
+  },
+  {
+   "fieldname": "reference_section",
+   "fieldtype": "Section Break",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "options": "Purchase Order",
+   "read_only": 1
+  },
+  {
+   "fieldname": "purchase_receipt",
+   "fieldtype": "Link",
+   "label": "Purchase Receipt",
+   "options": "Purchase Receipt",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ozey",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "purchase_order_item",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Purchase Order Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "purchase_receipt_item",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Purchase Receipt Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_bkxd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "stock_uom",
+   "fieldtype": "Link",
+   "label": "Stock UOM",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "conversion_factor",
+   "fieldtype": "Float",
+   "label": "Conversion Factor"
+  },
+  {
+   "fieldname": "returned_qty",
+   "fieldtype": "Float",
+   "label": "Returned Qty",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-01-05 13:03:07.537432",
+ "modified_by": "Administrator",
+ "module": "Purchase Receipt Rejected",
+ "name": "Purchase Receipt Rejected Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
