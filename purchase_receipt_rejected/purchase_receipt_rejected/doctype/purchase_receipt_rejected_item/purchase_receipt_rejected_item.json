@@ -8,15 +8,19 @@
  "field_order": [
   "item_code",
   "item_name",
-  "rejected_qty",
   "uom",
   "stock_uom",
   "column_break_bkxd",
+  "rejected_qty",
+  "redelivered_qty",
+  "returned_qty",
+  "conversion_factor",
+  "section_break_smfm",
   "rate",
   "amount",
-  "redelivered_qty",
-  "conversion_factor",
-  "returned_qty",
+  "column_break_snmr",
+  "base_rate",
+  "base_amount",
   "reference_section",
   "purchase_order",
   "purchase_receipt",
@@ -39,16 +43,19 @@
    "label": "Item Name"
   },
   {
+   "bold": 1,
    "fieldname": "rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Rate"
+   "label": "Rate",
+   "options": "currency"
   },
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Amount"
+   "label": "Amount",
+   "options": "currency"
   },
   {
    "allow_on_submit": 1,
@@ -64,7 +71,8 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Rejected Qty",
-   "precision": "3"
+   "precision": "3",
+   "read_only": 1
   },
   {
    "fieldname": "reference_section",
@@ -129,12 +137,35 @@
    "fieldtype": "Float",
    "label": "Returned Qty",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_smfm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_snmr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "base_rate",
+   "fieldtype": "Currency",
+   "label": "Rate (Company Currency)",
+   "options": "Company:company:default_currency",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "base_amount",
+   "fieldtype": "Currency",
+   "label": "Amount (Company Currency)",
+   "options": "Company:company:default_currency",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-05 13:03:07.537432",
+ "modified": "2025-01-12 17:01:14.256797",
  "modified_by": "Administrator",
  "module": "Purchase Receipt Rejected",
  "name": "Purchase Receipt Rejected Item",

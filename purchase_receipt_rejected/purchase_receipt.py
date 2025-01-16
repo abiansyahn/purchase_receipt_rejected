@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from frappe.utils import flt
+from frappe.utils import flt, get_link_to_form
 frappe.utils.logger.set_log_level("DEBUG")
 
 def check_for_rejected_items(self, method):
@@ -16,6 +16,8 @@ def check_for_rejected_items(self, method):
                 "conversion_factor": item.conversion_factor,
                 "rate": item.rate,
                 "amount": item.rejected_qty * item.rate,
+                "base_rate": item.base_rate,
+                "base_amount": item.rejected_qty * item.base_rate,
                 "purchase_order": item.purchase_order or "", 
                 "purchase_order_item": item.purchase_order_item or "",
                 "purchase_receipt": self.name, 
@@ -35,10 +37,12 @@ def check_for_rejected_items(self, method):
             doc.append("items", i)
         doc.insert(ignore_permissions=True)
 
+        frappe.msgprint(_("Complaint {0} created against Purchase Receipt {1}").format(get_link_to_form("Complaint", doc.name), self.name))
+
 def update_returned_item(self, method):
     if self.return_against:
-        purchase_receipt_complait = frappe.get_list("Complaint", {"purchase_receipt": self.return_against}, "name")
-        if len(purchase_receipt_complait) > 0:
+        purchase_receipt_complait = frappe.get_value("Complaint", {"purchase_receipt": self.return_against}, "name")
+        if purchase_receipt_complait:
             for item in self.items:
                 if item.purchase_receipt_item:
                     complaint_item = frappe.get_value("Purchase Receipt Rejected Item", {"purchase_receipt_item": item.purchase_receipt_item}, "name")
@@ -64,16 +68,16 @@ def update_returned_item(self, method):
                     ifnull((select
                         ifnull(sum(case when abs(rejected_qty) > abs(returned_qty) then abs(returned_qty) else abs(rejected_qty) end), 0)
                         / sum(abs(rejected_qty)) * 100
-                    from `tabPurchase Receipt Rejected Item` where parent='{purchase_receipt_complait[0].name}' and parenttype='Complaint' having sum(abs(rejected_qty)) > 0), 0), 6)
-                where name='{purchase_receipt_complait[0].name}'"""
+                    from `tabPurchase Receipt Rejected Item` where parent='{purchase_receipt_complait}' and parenttype='Complaint' having sum(abs(rejected_qty)) > 0), 0), 6)
+                where name='{purchase_receipt_complait}'"""
             )
-            frappe.db.set_value("Complaint", purchase_receipt_complait[0].name, "is_item_returned", 1)
+            frappe.db.set_value("Complaint", purchase_receipt_complait, "is_item_returned", 1)
             frappe.db.commit()
 
 def update_cancel_returned_item(self, method):
     if self.return_against:
-        purchase_receipt_complait = frappe.get_list("Complaint", {"purchase_receipt": self.return_against}, "name")
-        if len(purchase_receipt_complait) > 0:
+        purchase_receipt_complait = frappe.get_value("Complaint", {"purchase_receipt": self.return_against}, "name")
+        if purchase_receipt_complait:
             for item in self.items:
                 if item.purchase_receipt_item:
                     complaint_item = frappe.get_value("Purchase Receipt Rejected Item", {"purchase_receipt_item": item.purchase_receipt_item}, "name")
@@ -98,10 +102,10 @@ def update_cancel_returned_item(self, method):
                     ifnull((select
                         ifnull(sum(case when abs(rejected_qty) > abs(returned_qty) then abs(returned_qty) else abs(rejected_qty) end), 0)
                         / sum(abs(rejected_qty)) * 100
-                    from `tabPurchase Receipt Rejected Item` where parent='{purchase_receipt_complait[0].name}' and parenttype='Complaint' having sum(abs(rejected_qty)) > 0), 0), 6)
-                where name='{purchase_receipt_complait[0].name}'"""
+                    from `tabPurchase Receipt Rejected Item` where parent='{purchase_receipt_complait}' and parenttype='Complaint' having sum(abs(rejected_qty)) > 0), 0), 6)
+                where name='{purchase_receipt_complait}'"""
             )
-            frappe.db.set_value("Complaint", purchase_receipt_complait[0].name, "is_item_returned", 0)
+            frappe.db.set_value("Complaint", purchase_receipt_complait, "is_item_returned", 0)
             frappe.db.commit()
 
 def update_complaint_items(self, method):
@@ -115,11 +119,11 @@ def update_complaint_items(self, method):
                 if not submitted:
                     frappe.throw(_("Complaint {0} is not submitted").format(item.complaint))
 
-                rejected_qty = frappe.get_value("Purchase Receipt Rejected Item", item.complaint_item, "rejected_qty")
-                if item.qty > rejected_qty:
-                    frappe.throw(_(f"Accepted Qty row {item.idx} can't be more than {rejected_qty}"))
+                returned_qty, redelivered_qty = frappe.get_value("Purchase Receipt Rejected Item", item.complaint_item, ["returned_qty", "redelivered_qty"])
+                if item.qty > (returned_qty - redelivered_qty):
+                    frappe.throw(_(f"Accepted Qty row {item.idx} can't be more than {(returned_qty - redelivered_qty)}"))
 
-                redelivered_qty = (frappe.db.sql(
+                to_redelivered_qty = (frappe.db.sql(
                     f"""select ifnull(sum(qty), 0)
                     from `tabPurchase Receipt Item` where complaint_item = '{item.complaint_item}'
                     and docstatus = 1
@@ -128,7 +132,7 @@ def update_complaint_items(self, method):
                 
                 frappe.db.sql(
                     f"""update `tabPurchase Receipt Rejected Item`
-                    set redelivered_qty = {flt(redelivered_qty)}
+                    set redelivered_qty = {flt(to_redelivered_qty)}
                     where name='{item.complaint_item}'
                     """
                 )
@@ -152,12 +156,6 @@ def update_complaint_items(self, method):
             end
             where name='{self.complaint}'"""
         )
-
-        complaint_status, purchase_receipt = frappe.db.get_value("Complaint", self.complaint, ["complaint_status", "purchase_receipt"])
-        workflow_state = frappe.get_value("Purchase Receipt", purchase_receipt, "workflow_state")
-        if workflow_state:
-            if complaint_status == "Completed":
-                frappe.db.set_value("Purchase Receipt", purchase_receipt, "workflow_state", "Delivery Checked")
 
 def update_cancel_complaint_items(self, method):
     if self.complaint:
@@ -204,12 +202,4 @@ def update_cancel_complaint_items(self, method):
             end
             where name='{self.complaint}'"""
         )
-
-        complaint_status, purchase_receipt = frappe.db.get_value("Complaint", self.complaint, ["complaint_status", "purchase_receipt"])
-        workflow_state = frappe.get_value("Purchase Receipt", purchase_receipt, "workflow_state")
-        if workflow_state:
-            if complaint_status == "Completed":
-                frappe.db.set_value("Purchase Receipt", purchase_receipt, "workflow_state", "Delivery Checked")
-            else:
-                frappe.db.set_value("Purchase Receipt", purchase_receipt, "workflow_state", "Fehlbuchung")
 

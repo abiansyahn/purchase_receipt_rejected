@@ -1,0 +1,5 @@
+{
+	"js/purchase_receipt_rejected.min.js": [
+		"public/js/purchase_receipt.js"
+	]
+}
