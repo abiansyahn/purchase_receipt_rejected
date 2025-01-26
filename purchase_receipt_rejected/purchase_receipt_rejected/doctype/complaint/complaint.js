@@ -39,7 +39,7 @@ frappe.ui.form.on("Complaint", {
             method: "create_purchase_receipt",
             callback: function(r) {
                 if (!r.exe) {
-                    var doc = frappe.model.sync(r.message);
+                    var doc = frappe.model.sync(r.message.new_doc);
                     frappe.set_route("Form", doc[0].doctype, doc[0].name);
                 }
             }
