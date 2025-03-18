@@ -54,6 +54,54 @@ class Complaint(Document):
 		return {"new_doc":new_doc, "new_doc_items": new_doc.items}
 	
 @frappe.whitelist()
+def map_purchase_receipt(source_name, target_doc=None):
+	def update_item(obj, target, source_parent):
+		target.received_qty = flt(obj.returned_qty) - flt(obj.redelivered_qty)
+		target.qty = flt(obj.returned_qty) - flt(obj.redelivered_qty)
+		target.rejected_qty = 0
+		target.amount = (flt(obj.returned_qty) - flt(obj.redelivered_qty)) * flt(obj.rate)
+		target.base_amount = (flt(obj.returned_qty) - flt(obj.redelivered_qty)) * flt(obj.base_rate)
+
+	doc = get_mapped_doc(
+		"Complaint",
+		source_name, 
+		{
+			"Complaint": {
+				"doctype": "Purchase Receipt",
+				"field_map": {
+					"supplier": "supplier",
+					"purchase_order": "custom_po",
+					"name": "complaint",
+					"currency": "currency",
+					"conversion_rate": "conversion_rate",
+				},
+			},
+			"Purchase Receipt Rejected Item": {
+				"doctype": "Purchase Receipt Item",
+				"field_map": {
+					"name": "complaint_item",
+					"parent": "complaint",
+					"item_code": "item_code",
+					"item_name": "item_name",
+					"uom": "uom",
+					"stock_uom": "stock_uom",
+					"conversion_factor": "conversion_factor",
+					"price_list_rate": "price_list_rate",
+					"price_list_rate_company": "price_list_rate_company",
+					"discount_percentage": "discount_percentage",
+					"discount_amount": "discount_amount",
+					"purchase_order": "purchase_order",
+					"purchase_order_item": "purchase_order_item",
+				},
+				"postprocess": update_item,
+				"condition": lambda item: abs(item.returned_qty - item.redelivered_qty) > 0
+			},
+		}, 
+		target_doc
+	)
+	return target_doc
+
+@frappe.whitelist()
 def make_purchase_receipt(complaint_name):
 	frappe.flags.ignore_account_permission = True
 	complaint_doc = frappe.get_doc("Complaint", complaint_name)
@@ -85,3 +133,43 @@ def make_purchase_receipt(complaint_name):
 	if not is_any_item_returned:
 		frappe.throw(_("No item to be received in this complaint, you need to return at least 1 item"))
 	return data
+
+@frappe.whitelist()
+def make_complaint(source_name, target_doc=None, args=None):
+	def update_item(obj, target, source_parent):
+		target.returned_qty = 0
+		target.redelivered_qty = 0
+		target.rate = obj.rate
+		target.base_rate = obj.base_rate
+
+	doc = get_mapped_doc(
+		"Purchase Receipt",
+		source_name, 
+		{
+			"Purchase Receipt": {
+				"doctype": "Complaint",
+				"field_map": {
+					"supplier": "supplier",
+					"name": "purchase_receipt",
+					"custom_po": "purchase_order",
+					"currency": "currency",
+					"conversion_rate": "conversion_rate",
+					"contact_person": "contact_person",
+					"contact_email": "contact_email",
+				},
+			},
+			"Purchase Receipt Item": {
+				"doctype": "Purchase Receipt Rejected Item",
+				"field_map": {
+					"qty": "returned_qty",
+					"rate": "rate",
+					"base_rate": "base_rate",
+					"name": "purchase_receipt_item",
+					"parent": "purchase_receipt",
+				},
+				"postprocess": update_item,
+			},
+		}, 
+		target_doc
+	)
+	return doc
